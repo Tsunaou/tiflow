@@ -204,11 +204,21 @@ type preparedDMLs struct {
 
 // convert2RowChanges is a helper function that convert the row change representation
 // of CDC into a general one.
+// TODO: key point
 func convert2RowChanges(
 	row *model.RowChangedEvent,
 	tableInfo *timodel.TableInfo,
 	changeType sqlmodel.RowChangeType,
 ) *sqlmodel.RowChange {
+
+	log.Info("CDC:RowChangeEvent",
+		zap.Int64("row-id", row.RowID),
+		zap.String("table-name", row.Table.Table),
+		zap.Uint64("start-ts", row.StartTs),
+		zap.Uint64("commit-ts", row.CommitTs),
+		zap.Any("columns", row.Columns),
+		zap.Any("pre-columns", row.PreColumns))
+
 	preValues := make([]interface{}, 0, len(row.PreColumns))
 	for _, col := range row.PreColumns {
 		if col == nil {
